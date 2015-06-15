@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_helloword" default="compile.module.helloword">
+  <dirname property="module.helloword.basedir" file="${ant.file.module_helloword}"/>
+  
+  <property name="module.jdk.home.helloword" value="${jdk.home.1.8}"/>
+  <property name="module.jdk.bin.helloword" value="${jdk.bin.1.8}"/>
+  <property name="module.jdk.classpath.helloword" value="jdk.classpath.1.8"/>
+  
+  <property name="compiler.args.helloword" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="helloword.output.dir" value="${module.helloword.basedir}/Published"/>
+  <property name="helloword.testoutput.dir" value="${module.helloword.basedir}/out/test/testgame"/>
+  
+  <path id="helloword.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="helloword.module.production.classpath">
+    <path refid="${module.jdk.classpath.helloword}"/>
+  </path>
+  
+  <path id="helloword.runtime.production.module.classpath">
+    <pathelement location="${helloword.output.dir}"/>
+  </path>
+  
+  <path id="helloword.module.classpath">
+    <path refid="${module.jdk.classpath.helloword}"/>
+    <pathelement location="${helloword.output.dir}"/>
+  </path>
+  
+  <path id="helloword.runtime.module.classpath">
+    <pathelement location="${helloword.testoutput.dir}"/>
+    <pathelement location="${helloword.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.helloword">
+    <patternset refid="ignored.files"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/cocoa/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/utils/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/layers/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/scenes/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/sprites/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/support/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/labelttf/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/platform/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/renderer/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/textures/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/base-nodes/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/core/event-manager/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/audio/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/menus/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/labels/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/actions/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/effects/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/kazmath/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/kazmath/gl/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/physics/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/shaders/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/tilemap/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/parallax/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/particle/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/actions3d/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/node-grid/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/text-input/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/compression/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/shape-nodes/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/transitions/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/motion-streak/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/clipping-nodes/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/progress-timer/**"/>
+    <exclude name="frameworks/cocos2d-html5/cocos2d/render-texture/**"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.helloword">
+    <patternset refid="excluded.from.module.helloword"/>
+  </patternset>
+  
+  <path id="helloword.module.test.sourcepath">
+    <dirset dir="${module.helloword.basedir}/../../cocos">
+      <include name="HelloWord"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.helloword" depends="compile.module.helloword.production,compile.module.helloword.tests" description="Compile module HelloWord"/>
+  
+  <target name="compile.module.helloword.production" depends="register.custom.compilers" description="Compile module HelloWord; production classes"/>
+  
+  <target name="compile.module.helloword.tests" depends="register.custom.compilers,compile.module.helloword.production" description="compile module HelloWord; test classes" unless="skip.tests">
+    <mkdir dir="${helloword.testoutput.dir}"/>
+    <javac2 destdir="${helloword.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.helloword}/javac">
+      <compilerarg line="${compiler.args.helloword}"/>
+      <bootclasspath refid="helloword.module.bootclasspath"/>
+      <classpath refid="helloword.module.classpath"/>
+      <src refid="helloword.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.helloword"/>
+    </javac2>
+    
+    <copy todir="${helloword.testoutput.dir}">
+      <fileset dir="${module.helloword.basedir}">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.helloword" description="cleanup module">
+    <delete dir="${helloword.output.dir}"/>
+    <delete dir="${helloword.testoutput.dir}"/>
+  </target>
+</project>

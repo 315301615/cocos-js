@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_cocos" default="compile.module.cocos">
+  <dirname property="module.cocos.basedir" file="${ant.file.module_cocos}"/>
+  
+  <property name="module.jdk.home.cocos" value="${jdk.home.1.8}"/>
+  <property name="module.jdk.bin.cocos" value="${jdk.bin.1.8}"/>
+  <property name="module.jdk.classpath.cocos" value="jdk.classpath.1.8"/>
+  
+  <property name="compiler.args.cocos" value="-encoding UTF-8 -source 1.6 ${compiler.args}"/>
+  
+  <property name="cocos.output.dir" value="${module.cocos.basedir}/Published"/>
+  <property name="cocos.testoutput.dir" value="${module.cocos.basedir}/out/test/testgame"/>
+  
+  <path id="cocos.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="cocos.module.production.classpath">
+    <path refid="${module.jdk.classpath.cocos}"/>
+  </path>
+  
+  <path id="cocos.runtime.production.module.classpath">
+    <pathelement location="${cocos.output.dir}"/>
+  </path>
+  
+  <path id="cocos.module.classpath">
+    <path refid="${module.jdk.classpath.cocos}"/>
+    <pathelement location="${cocos.output.dir}"/>
+  </path>
+  
+  <path id="cocos.runtime.module.classpath">
+    <pathelement location="${cocos.testoutput.dir}"/>
+    <pathelement location="${cocos.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.cocos">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.cocos">
+    <patternset refid="excluded.from.module.cocos"/>
+  </patternset>
+  
+  <path id="cocos.module.sourcepath">
+    <dirset dir="${module.cocos.basedir}">
+      <include name="Sources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.cocos" depends="compile.module.cocos.production,compile.module.cocos.tests" description="Compile module cocos"/>
+  
+  <target name="compile.module.cocos.production" depends="register.custom.compilers" description="Compile module cocos; production classes">
+    <mkdir dir="${cocos.output.dir}"/>
+    <javac2 destdir="${cocos.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.cocos}/javac">
+      <compilerarg line="${compiler.args.cocos}"/>
+      <bootclasspath refid="cocos.module.bootclasspath"/>
+      <classpath refid="cocos.module.production.classpath"/>
+      <src refid="cocos.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.cocos"/>
+    </javac2>
+    
+    <copy todir="${cocos.output.dir}">
+      <fileset dir="${module.cocos.basedir}/Sources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.cocos.tests" depends="register.custom.compilers,compile.module.cocos.production" description="compile module cocos; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.cocos" description="cleanup module">
+    <delete dir="${cocos.output.dir}"/>
+    <delete dir="${cocos.testoutput.dir}"/>
+  </target>
+</project>
